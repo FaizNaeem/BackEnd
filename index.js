@@ -1,34 +1,41 @@
-const exprees = require('express')
-// const router = require('./Routes/user')
-const app = exprees()
-const cors = require("cors")
-const morgan = require('morgan')
-const mongoose = require('mongoose')
-const  route  = require('./Routes/UserRoute')
-app.use(cors())
-mongoose.connect('mongodb+srv://faiz:faiz@cluster0.enqka2g.mongodb.net/').then(()=>{
-    console.log("connect mongoDb");
-})
-.catch((err)=>{console.log(err);})
+const express = require('express');
+const mongoose = require('mongoose');
+const morgan = require('morgan');
+const cors = require('cors');
 
-app.use(morgan("tiny"))
-app.use(exprees.json())
-// app.use('/user', router)
-const middelever=(req ,res , next)=>{
-console.log("Middlewere console");
-next()
-}
-app.use(middelever)
+const app = express();
 
-app.get("/",(req ,res)=>{
-    res.send({
-        "status" :"200",
-        "Name" :"Faiz"
-    })
-})
+// Middleware
+app.use(cors());
+app.use(morgan('tiny'));
+app.use(express.json());
 
-app.use("/Atendence",  route)
+mongoose.connect('mongodb+srv://faiz:faiz@cluster0.enqka2g.mongodb.net/your-database-name')
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+  });
 
-app.listen(100,()=>{
-console.log("Server React To Go-->");
-})
+const middlewareLogger = (req, res, next) => {
+  console.log('Middleware console');
+  next();
+};
+
+app.use(middlewareLogger);
+
+// Routes
+app.get('/', (req, res) => {
+  res.send({
+    status: '200',
+    name: 'Faiz',
+  });
+});
+const userRoute = require('./Routes/UserRoute');
+app.use('/Atendence', userRoute);
+
+const PORT = 3000; 
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
